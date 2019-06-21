@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 
 namespace ChessEngine.Engine
 {
@@ -49,7 +50,7 @@ namespace ChessEngine.Engine
 
        
 
-        internal static MoveContent IterativeSearch(Board examineBoard, byte depth, ref int nodesSearched, ref int nodesQuiessence, ref string pvLine, ref byte plyDepthReached, ref byte rootMovesSearched, List<OpeningMove> currentGameBook)
+        internal static MoveContent IterativeSearch(Board examineBoard, byte depth, ref int nodesSearched, ref int nodesQuiessence, ref string pvLine, ref byte plyDepthReached, ref byte rootMovesSearched, List<OpeningMove> currentGameBook, CancellationToken ct)
         {
             List<Position> pvChild = new List<Position>();
             int alpha = -400000000;
@@ -72,7 +73,8 @@ namespace ChessEngine.Engine
             //Can I make an instant mate?
             foreach (Board pos in succ.Positions)
             {
-                int value = -AlphaBeta(pos, 1, -beta, -alpha, ref nodesSearched, ref nodesQuiessence, ref pvChild, true);
+                ct.ThrowIfCancellationRequested();
+                int value = -AlphaBeta(pos, 1, -beta, -alpha, ref nodesSearched, ref nodesQuiessence, ref pvChild, true, ct);
 
                 if (value >= 32767)
                 {
@@ -92,13 +94,15 @@ namespace ChessEngine.Engine
 
             foreach (Board pos in succ.Positions)
             {
+                ct.ThrowIfCancellationRequested();
+
                 currentBoard++;
 
 				progress = (int)((currentBoard / (decimal)succ.Positions.Count) * 100);
 
                 pvChild = new List<Position>();
 
-                int value = -AlphaBeta(pos, depth, -beta, -alpha, ref nodesSearched, ref nodesQuiessence, ref pvChild, false);
+                int value = -AlphaBeta(pos, depth, -beta, -alpha, ref nodesSearched, ref nodesQuiessence, ref pvChild, false, ct);
 
                 if (value >= 32767)
                 {
@@ -203,8 +207,10 @@ namespace ChessEngine.Engine
             return succ;
         }
 
-        private static int AlphaBeta(Board examineBoard, byte depth, int alpha, int beta, ref int nodesSearched, ref int nodesQuiessence, ref List<Position> pvLine, bool extended)
+        private static int AlphaBeta(Board examineBoard, byte depth, int alpha, int beta, ref int nodesSearched, ref int nodesQuiessence, ref List<Position> pvLine, bool extended, CancellationToken ct)
         {
+            ct.ThrowIfCancellationRequested();
+
             nodesSearched++;
 
             if (examineBoard.HalfMoveClock >= 100 || examineBoard.RepeatedMove >= 3)
@@ -284,7 +290,7 @@ namespace ChessEngine.Engine
                     }
                 }
 
-                int value = -AlphaBeta(board, (byte)(depth - 1), -beta, -alpha, ref nodesSearched, ref nodesQuiessence, ref pvChild, extended);
+                int value = -AlphaBeta(board, (byte)(depth - 1), -beta, -alpha, ref nodesSearched, ref nodesQuiessence, ref pvChild, extended, ct);
 
                 if (value >= beta)
                 {

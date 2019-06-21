@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 
 namespace ChessEngine.Engine
 {
@@ -894,7 +895,9 @@ namespace ChessEngine.Engine
 
         #region Search
 
-        public void AiPonderMove()
+        public void AiPonderMove() => AiPonderMove(CancellationToken.None);
+
+        public void AiPonderMove(CancellationToken ct)
         {
             Thinking = true;
 
@@ -933,7 +936,7 @@ namespace ChessEngine.Engine
                 if (FindPlayBookMove(ref bestMove, ChessBoard, CurrentGameBook) == false ||
                     ChessBoard.HalfMoveClock > 90 || ChessBoard.RepeatedMove >= 2)
                 {
-					bestMove = Search.IterativeSearch(ChessBoard, PlyDepthSearched, ref NodesSearched, ref NodesQuiessence, ref pvLine, ref PlyDepthReached, ref RootMovesSearched, CurrentGameBook);
+					bestMove = Search.IterativeSearch(ChessBoard, PlyDepthSearched, ref NodesSearched, ref NodesQuiessence, ref pvLine, ref PlyDepthReached, ref RootMovesSearched, CurrentGameBook, ct);
                 }
             }
  
@@ -985,15 +988,6 @@ namespace ChessEngine.Engine
 
             Thinking = false;
 		}
-
-        #endregion
-
-        #region Test
-
-        public PerformanceTest.PerformanceResult RunPerformanceTest(int depth=5)
-        {
-            return PerformanceTest.RunPerfTest(depth, ChessBoard);
-        }
 
         #endregion
 
