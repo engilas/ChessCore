@@ -16,7 +16,7 @@ namespace ChessEngine.Engine
     {
         internal static PieceMoveSet[] BishopMoves1;
         internal static byte[] BishopTotalMoves1;
-        
+
         internal static PieceMoveSet[] BishopMoves2;
         internal static byte[] BishopTotalMoves2;
 
@@ -71,17 +71,14 @@ namespace ChessEngine.Engine
 
         private static byte Position(byte col, byte row)
         {
-            return (byte)(col + (row * 8));
+            return (byte) (col + row * 8);
         }
 
         #region IntitiateMotionMethods
 
         internal static void InitiateChessPieceMotion()
         {
-            if (Initiated)
-            {
-                return;
-            }
+            if (Initiated) return;
 
             Initiated = true;
 
@@ -144,7 +141,7 @@ namespace ChessEngine.Engine
 
             MoveArrays.KingMoves = new PieceMoveSet[64];
             MoveArrays.KingTotalMoves = new byte[64];
-            
+
             SetMovesWhitePawn();
             SetMovesBlackPawn();
             SetMovesKnight();
@@ -159,30 +156,31 @@ namespace ChessEngine.Engine
             for (byte index = 8; index <= 55; index++)
             {
                 var moveset = new PieceMoveSet(new List<byte>());
-                
-                byte x = (byte)(index % 8);
-                byte y = (byte)((index / 8));
-                
+
+                var x = (byte) (index % 8);
+                var y = (byte) (index / 8);
+
                 //Diagonal Kill
                 if (y < 7 && x < 7)
                 {
-                    moveset.Moves.Add((byte)(index + 8 + 1));
+                    moveset.Moves.Add((byte) (index + 8 + 1));
                     MoveArrays.BlackPawnTotalMoves[index]++;
                 }
+
                 if (x > 0 && y < 7)
                 {
-                    moveset.Moves.Add((byte)(index + 8 - 1));
+                    moveset.Moves.Add((byte) (index + 8 - 1));
                     MoveArrays.BlackPawnTotalMoves[index]++;
                 }
-                
+
                 //One Forward
-                moveset.Moves.Add((byte)(index + 8));
+                moveset.Moves.Add((byte) (index + 8));
                 MoveArrays.BlackPawnTotalMoves[index]++;
 
                 //Starting Position we can jump 2
                 if (y == 1)
                 {
-                    moveset.Moves.Add((byte)(index + 16));
+                    moveset.Moves.Add((byte) (index + 16));
                     MoveArrays.BlackPawnTotalMoves[index]++;
                 }
 
@@ -194,31 +192,32 @@ namespace ChessEngine.Engine
         {
             for (byte index = 8; index <= 55; index++)
             {
-                byte x = (byte)(index % 8);
-                byte y = (byte)((index / 8));
+                var x = (byte) (index % 8);
+                var y = (byte) (index / 8);
 
                 var moveset = new PieceMoveSet(new List<byte>());
-               
+
                 //Diagonal Kill
                 if (x < 7 && y > 0)
                 {
-                    moveset.Moves.Add((byte)(index - 8 + 1));
+                    moveset.Moves.Add((byte) (index - 8 + 1));
                     MoveArrays.WhitePawnTotalMoves[index]++;
                 }
+
                 if (x > 0 && y > 0)
                 {
-                    moveset.Moves.Add((byte)(index - 8 - 1));
+                    moveset.Moves.Add((byte) (index - 8 - 1));
                     MoveArrays.WhitePawnTotalMoves[index]++;
                 }
 
                 //One Forward
-                moveset.Moves.Add((byte)(index - 8));
+                moveset.Moves.Add((byte) (index - 8));
                 MoveArrays.WhitePawnTotalMoves[index]++;
 
                 //Starting Position we can jump 2
                 if (y == 6)
                 {
-                    moveset.Moves.Add((byte)(index - 16));
+                    moveset.Moves.Add((byte) (index - 16));
                     MoveArrays.WhitePawnTotalMoves[index]++;
                 }
 
@@ -229,509 +228,499 @@ namespace ChessEngine.Engine
         private static void SetMovesKnight()
         {
             for (byte y = 0; y < 8; y++)
+            for (byte x = 0; x < 8; x++)
             {
-                for (byte x = 0; x < 8; x++)
+                var index = (byte) (y + x * 8);
+
+                var moveset = new PieceMoveSet(new List<byte>());
+
+                byte move;
+
+                if (y < 6 && x > 0)
                 {
-                    byte index = (byte)(y + (x * 8));
+                    move = Position((byte) (y + 2), (byte) (x - 1));
 
-                    var moveset = new PieceMoveSet(new List<byte>());
-                    
-                    byte move;
-
-                    if (y < 6 && x > 0)
+                    if (move < 64)
                     {
-                        move = Position((byte)(y + 2), (byte)(x - 1));
-
-                        if (move < 64)
-                        {
-                            moveset.Moves.Add(move);
-                            MoveArrays.KnightTotalMoves[index]++;
-                        }
+                        moveset.Moves.Add(move);
+                        MoveArrays.KnightTotalMoves[index]++;
                     }
-
-                    if (y > 1 && x < 7)
-                    {
-                        move = Position((byte)(y - 2), (byte)(x + 1));
-
-                        if (move < 64)
-                        {
-                            moveset.Moves.Add(move);
-                            MoveArrays.KnightTotalMoves[index]++;
-                        }
-                    }
-
-                    if (y > 1 && x > 0)
-                    {
-                        move = Position((byte)(y - 2), (byte)(x - 1));
-
-                        if (move < 64)
-                        {
-                            moveset.Moves.Add(move);
-                            MoveArrays.KnightTotalMoves[index]++;
-                        }
-                    }
-
-                    if (y < 6 && x < 7)
-                    {
-                        move = Position((byte)(y + 2), (byte)(x + 1));
-
-                        if (move < 64)
-                        {
-                            moveset.Moves.Add(move);
-                            MoveArrays.KnightTotalMoves[index]++;
-                        }
-                    }
-
-                    if (y > 0 && x < 6)
-                    {
-                        move = Position((byte)(y - 1), (byte)(x + 2));
-
-                        if (move < 64)
-                        {
-                            moveset.Moves.Add(move);
-                            MoveArrays.KnightTotalMoves[index]++;
-                        }
-                    }
-
-                    if (y < 7 && x > 1)
-                    {
-                        move = Position((byte)(y + 1), (byte)(x - 2));
-
-                        if (move < 64)
-                        {
-                            moveset.Moves.Add(move);
-                            MoveArrays.KnightTotalMoves[index]++;
-                        }
-                    }
-
-                    if (y > 0 && x > 1)
-                    {
-                        move = Position((byte)(y - 1), (byte)(x - 2));
-
-                        if (move < 64)
-                        {
-                            moveset.Moves.Add(move);
-                            MoveArrays.KnightTotalMoves[index]++;
-                        }
-                    }
-                    
-                    if (y < 7 && x < 6)
-                    {
-                        move = Position((byte)(y + 1), (byte)(x + 2));
-
-                        if (move < 64)
-                        {
-                            moveset.Moves.Add(move);
-                            MoveArrays.KnightTotalMoves[index]++;
-                        }
-                    }
-
-                    MoveArrays.KnightMoves[index] = moveset;
                 }
+
+                if (y > 1 && x < 7)
+                {
+                    move = Position((byte) (y - 2), (byte) (x + 1));
+
+                    if (move < 64)
+                    {
+                        moveset.Moves.Add(move);
+                        MoveArrays.KnightTotalMoves[index]++;
+                    }
+                }
+
+                if (y > 1 && x > 0)
+                {
+                    move = Position((byte) (y - 2), (byte) (x - 1));
+
+                    if (move < 64)
+                    {
+                        moveset.Moves.Add(move);
+                        MoveArrays.KnightTotalMoves[index]++;
+                    }
+                }
+
+                if (y < 6 && x < 7)
+                {
+                    move = Position((byte) (y + 2), (byte) (x + 1));
+
+                    if (move < 64)
+                    {
+                        moveset.Moves.Add(move);
+                        MoveArrays.KnightTotalMoves[index]++;
+                    }
+                }
+
+                if (y > 0 && x < 6)
+                {
+                    move = Position((byte) (y - 1), (byte) (x + 2));
+
+                    if (move < 64)
+                    {
+                        moveset.Moves.Add(move);
+                        MoveArrays.KnightTotalMoves[index]++;
+                    }
+                }
+
+                if (y < 7 && x > 1)
+                {
+                    move = Position((byte) (y + 1), (byte) (x - 2));
+
+                    if (move < 64)
+                    {
+                        moveset.Moves.Add(move);
+                        MoveArrays.KnightTotalMoves[index]++;
+                    }
+                }
+
+                if (y > 0 && x > 1)
+                {
+                    move = Position((byte) (y - 1), (byte) (x - 2));
+
+                    if (move < 64)
+                    {
+                        moveset.Moves.Add(move);
+                        MoveArrays.KnightTotalMoves[index]++;
+                    }
+                }
+
+                if (y < 7 && x < 6)
+                {
+                    move = Position((byte) (y + 1), (byte) (x + 2));
+
+                    if (move < 64)
+                    {
+                        moveset.Moves.Add(move);
+                        MoveArrays.KnightTotalMoves[index]++;
+                    }
+                }
+
+                MoveArrays.KnightMoves[index] = moveset;
             }
         }
 
         private static void SetMovesBishop()
         {
             for (byte y = 0; y < 8; y++)
+            for (byte x = 0; x < 8; x++)
             {
-                for (byte x = 0; x < 8; x++)
+                var index = (byte) (y + x * 8);
+
+                var moveset = new PieceMoveSet(new List<byte>());
+                byte move;
+
+                var row = x;
+                var col = y;
+
+                while (row < 7 && col < 7)
                 {
-                    byte index = (byte)(y + (x * 8));
+                    row++;
+                    col++;
 
-                    var moveset = new PieceMoveSet(new List<byte>());
-                    byte move;
-
-                    byte row = x;
-                    byte col = y;
-
-                    while (row < 7 && col < 7)
-                    {
-                        row++;
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.BishopTotalMoves1[index]++;
-                    }
-
-                    MoveArrays.BishopMoves1[index] = moveset;
-                    moveset = new PieceMoveSet(new List<byte>());
-
-                    row = x;
-                    col = y;
-
-                    while (row < 7 && col > 0)
-                    {
-                        row++;
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.BishopTotalMoves2[index]++;
-                    }
-
-                    MoveArrays.BishopMoves2[index] = moveset;
-                    moveset = new PieceMoveSet(new List<byte>());
-
-                    row = x;
-                    col = y;
-
-                    while (row > 0 && col < 7)
-                    {
-                        row--;
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.BishopTotalMoves3[index]++;
-                    }
-
-                    MoveArrays.BishopMoves3[index] = moveset;
-                    moveset = new PieceMoveSet(new List<byte>());
-
-                    row = x;
-                    col = y;
-
-                    while (row > 0 && col > 0)
-                    {
-                        row--;
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.BishopTotalMoves4[index]++;
-                    }
-
-                    MoveArrays.BishopMoves4[index] = moveset;
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.BishopTotalMoves1[index]++;
                 }
+
+                MoveArrays.BishopMoves1[index] = moveset;
+                moveset = new PieceMoveSet(new List<byte>());
+
+                row = x;
+                col = y;
+
+                while (row < 7 && col > 0)
+                {
+                    row++;
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.BishopTotalMoves2[index]++;
+                }
+
+                MoveArrays.BishopMoves2[index] = moveset;
+                moveset = new PieceMoveSet(new List<byte>());
+
+                row = x;
+                col = y;
+
+                while (row > 0 && col < 7)
+                {
+                    row--;
+                    col++;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.BishopTotalMoves3[index]++;
+                }
+
+                MoveArrays.BishopMoves3[index] = moveset;
+                moveset = new PieceMoveSet(new List<byte>());
+
+                row = x;
+                col = y;
+
+                while (row > 0 && col > 0)
+                {
+                    row--;
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.BishopTotalMoves4[index]++;
+                }
+
+                MoveArrays.BishopMoves4[index] = moveset;
             }
         }
 
         private static void SetMovesRook()
         {
             for (byte y = 0; y < 8; y++)
+            for (byte x = 0; x < 8; x++)
             {
-                for (byte x = 0; x < 8; x++)
+                var index = (byte) (y + x * 8);
+
+                var moveset = new PieceMoveSet(new List<byte>());
+                byte move;
+
+                var row = x;
+                var col = y;
+
+                while (row < 7)
                 {
-                    byte index = (byte)(y + (x * 8));
+                    row++;
 
-                    var moveset = new PieceMoveSet(new List<byte>());
-                    byte move;
-
-                    byte row = x;
-                    byte col = y;
-
-                    while (row < 7)
-                    {
-                        row++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.RookTotalMoves1[index]++;
-                    }
-
-                    MoveArrays.RookMoves1[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (row > 0)
-                    {
-                        row--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.RookTotalMoves2[index]++;
-                    }
-
-                    MoveArrays.RookMoves2[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (col > 0)
-                    {
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.RookTotalMoves3[index]++;
-                    }
-
-                    MoveArrays.RookMoves3[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (col < 7)
-                    {
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.RookTotalMoves4[index]++;
-                    }
-
-                    MoveArrays.RookMoves4[index] = moveset;
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.RookTotalMoves1[index]++;
                 }
+
+                MoveArrays.RookMoves1[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (row > 0)
+                {
+                    row--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.RookTotalMoves2[index]++;
+                }
+
+                MoveArrays.RookMoves2[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (col > 0)
+                {
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.RookTotalMoves3[index]++;
+                }
+
+                MoveArrays.RookMoves3[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (col < 7)
+                {
+                    col++;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.RookTotalMoves4[index]++;
+                }
+
+                MoveArrays.RookMoves4[index] = moveset;
             }
         }
 
         private static void SetMovesQueen()
         {
             for (byte y = 0; y < 8; y++)
+            for (byte x = 0; x < 8; x++)
             {
-                for (byte x = 0; x < 8; x++)
+                var index = (byte) (y + x * 8);
+
+                var moveset = new PieceMoveSet(new List<byte>());
+                byte move;
+
+                var row = x;
+                var col = y;
+
+                while (row < 7)
                 {
-                    byte index = (byte)(y + (x * 8));
+                    row++;
 
-                    var moveset = new PieceMoveSet(new List<byte>());
-                    byte move;
-
-                    byte row = x;
-                    byte col = y;
-
-                    while (row < 7)
-                    {
-                        row++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.QueenTotalMoves1[index]++;
-                    }
-
-                    MoveArrays.QueenMoves1[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (row > 0)
-                    {
-                        row--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.QueenTotalMoves2[index]++;
-                    }
-
-                    MoveArrays.QueenMoves2[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (col > 0)
-                    {
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.QueenTotalMoves3[index]++;
-                    }
-
-                    MoveArrays.QueenMoves3[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (col < 7)
-                    {
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.QueenTotalMoves4[index]++;
-                    }
-
-                    MoveArrays.QueenMoves4[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (row < 7 && col < 7)
-                    {
-                        row++;
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.QueenTotalMoves5[index]++;
-                    }
-
-                    MoveArrays.QueenMoves5[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (row < 7 && col > 0)
-                    {
-                        row++;
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.QueenTotalMoves6[index]++;
-                    }
-
-                    MoveArrays.QueenMoves6[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (row > 0 && col < 7)
-                    {
-                        row--;
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.QueenTotalMoves7[index]++;
-                    }
-
-                    MoveArrays.QueenMoves7[index] = moveset;
-
-                    moveset = new PieceMoveSet(new List<byte>());
-                    row = x;
-                    col = y;
-
-                    while (row > 0 && col > 0)
-                    {
-                        row--;
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.QueenTotalMoves8[index]++;
-                    }
-
-                    MoveArrays.QueenMoves8[index] = moveset;
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.QueenTotalMoves1[index]++;
                 }
+
+                MoveArrays.QueenMoves1[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (row > 0)
+                {
+                    row--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.QueenTotalMoves2[index]++;
+                }
+
+                MoveArrays.QueenMoves2[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (col > 0)
+                {
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.QueenTotalMoves3[index]++;
+                }
+
+                MoveArrays.QueenMoves3[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (col < 7)
+                {
+                    col++;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.QueenTotalMoves4[index]++;
+                }
+
+                MoveArrays.QueenMoves4[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (row < 7 && col < 7)
+                {
+                    row++;
+                    col++;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.QueenTotalMoves5[index]++;
+                }
+
+                MoveArrays.QueenMoves5[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (row < 7 && col > 0)
+                {
+                    row++;
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.QueenTotalMoves6[index]++;
+                }
+
+                MoveArrays.QueenMoves6[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (row > 0 && col < 7)
+                {
+                    row--;
+                    col++;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.QueenTotalMoves7[index]++;
+                }
+
+                MoveArrays.QueenMoves7[index] = moveset;
+
+                moveset = new PieceMoveSet(new List<byte>());
+                row = x;
+                col = y;
+
+                while (row > 0 && col > 0)
+                {
+                    row--;
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.QueenTotalMoves8[index]++;
+                }
+
+                MoveArrays.QueenMoves8[index] = moveset;
             }
         }
 
         private static void SetMovesKing()
         {
             for (byte y = 0; y < 8; y++)
+            for (byte x = 0; x < 8; x++)
             {
-                for (byte x = 0; x < 8; x++)
+                var index = (byte) (y + x * 8);
+
+                var moveset = new PieceMoveSet(new List<byte>());
+                byte move;
+
+                var row = x;
+                var col = y;
+
+                if (row < 7)
                 {
-                    byte index = (byte)(y + (x * 8));
+                    row++;
 
-                    var moveset = new PieceMoveSet(new List<byte>());
-                    byte move;
-
-                    byte row = x;
-                    byte col = y;
-
-                    if (row < 7)
-                    {
-                        row++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.KingTotalMoves[index]++;
-                    }
-
-                    row = x;
-                    col = y;
-
-                    if (row > 0)
-                    {
-                        row--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.KingTotalMoves[index]++;
-                    }
-
-                    row = x;
-                    col = y;
-
-                    if (col > 0)
-                    {
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.KingTotalMoves[index]++;
-                    }
-
-                    row = x;
-                    col = y;
-
-                    if (col < 7)
-                    {
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.KingTotalMoves[index]++;
-                    }
-
-                    row = x;
-                    col = y;
-
-                    if (row < 7 && col < 7)
-                    {
-                        row++;
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.KingTotalMoves[index]++;
-                    }
-
-                    row = x;
-                    col = y;
-
-                    if (row < 7 && col > 0)
-                    {
-                        row++;
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.KingTotalMoves[index]++;
-                    }
-
-                    row = x;
-                    col = y;
-
-                    if (row > 0 && col < 7)
-                    {
-                        row--;
-                        col++;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.KingTotalMoves[index]++;
-                    }
-
-
-                    row = x;
-                    col = y;
-
-                    if (row > 0 && col > 0)
-                    {
-                        row--;
-                        col--;
-
-                        move = Position(col, row);
-                        moveset.Moves.Add(move);
-                        MoveArrays.KingTotalMoves[index]++;
-                    }
-
-                    MoveArrays.KingMoves[index] = moveset;
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.KingTotalMoves[index]++;
                 }
+
+                row = x;
+                col = y;
+
+                if (row > 0)
+                {
+                    row--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.KingTotalMoves[index]++;
+                }
+
+                row = x;
+                col = y;
+
+                if (col > 0)
+                {
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.KingTotalMoves[index]++;
+                }
+
+                row = x;
+                col = y;
+
+                if (col < 7)
+                {
+                    col++;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.KingTotalMoves[index]++;
+                }
+
+                row = x;
+                col = y;
+
+                if (row < 7 && col < 7)
+                {
+                    row++;
+                    col++;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.KingTotalMoves[index]++;
+                }
+
+                row = x;
+                col = y;
+
+                if (row < 7 && col > 0)
+                {
+                    row++;
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.KingTotalMoves[index]++;
+                }
+
+                row = x;
+                col = y;
+
+                if (row > 0 && col < 7)
+                {
+                    row--;
+                    col++;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.KingTotalMoves[index]++;
+                }
+
+
+                row = x;
+                col = y;
+
+                if (row > 0 && col > 0)
+                {
+                    row--;
+                    col--;
+
+                    move = Position(col, row);
+                    moveset.Moves.Add(move);
+                    MoveArrays.KingTotalMoves[index]++;
+                }
+
+                MoveArrays.KingMoves[index] = moveset;
             }
         }
 

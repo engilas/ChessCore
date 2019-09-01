@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 
 namespace ChessEngine.Engine
 {
-
     #region Enums
 
     #region ChessPieceColor enum
@@ -32,9 +30,15 @@ namespace ChessEngine.Engine
     #endregion
 
     #endregion
-    
+
     internal sealed class Piece
     {
+        public new string ToString()
+        {
+            return PieceType + " " + PieceColor + " " + PieceValue + " " + PieceActionValue + " " + ValidMoves.Count +
+                   " " + AttackedValue + " " + DefendedValue;
+        }
+
         #region InternalMembers
 
         internal ChessPieceColor PieceColor;
@@ -45,7 +49,7 @@ namespace ChessEngine.Engine
 
         internal short AttackedValue;
         internal short DefendedValue;
-        
+
         internal int LastValidMoveCount;
         internal bool Moved;
 
@@ -64,9 +68,9 @@ namespace ChessEngine.Engine
             Moved = piece.Moved;
             PieceValue = piece.PieceValue;
             PieceActionValue = piece.PieceActionValue;
-            
+
             if (piece.ValidMoves != null)
-                LastValidMoveCount = piece.ValidMoves.Count;                      
+                LastValidMoveCount = piece.ValidMoves.Count;
         }
 
         internal Piece(ChessPieceType chessPiece, ChessPieceColor chessPieceColor)
@@ -75,13 +79,9 @@ namespace ChessEngine.Engine
             PieceColor = chessPieceColor;
 
             if (PieceType == ChessPieceType.Pawn || PieceType == ChessPieceType.Knight)
-            {
                 LastValidMoveCount = 2;
-            }
             else
-            {
                 LastValidMoveCount = 0;
-            }
 
             ValidMoves = new Stack<byte>(LastValidMoveCount);
 
@@ -93,40 +93,40 @@ namespace ChessEngine.Engine
 
         #region InternalMembers
 
-        internal static string GetPieceTypeShort (ChessPieceType pieceType)
+        internal static string GetPieceTypeShort(ChessPieceType pieceType)
         {
             switch (pieceType)
             {
                 case ChessPieceType.Pawn:
-                    {
-                        return "P";
-                    }
+                {
+                    return "P";
+                }
                 case ChessPieceType.Knight:
-                    {
-                        return "N";
-                    }
+                {
+                    return "N";
+                }
                 case ChessPieceType.Bishop:
-                    {
-                        return "B";
-                    }
+                {
+                    return "B";
+                }
                 case ChessPieceType.Rook:
-                    {
-                        return "R";
-                    }
+                {
+                    return "R";
+                }
 
                 case ChessPieceType.Queen:
-                    {
-                        return "Q";
-                    }
+                {
+                    return "Q";
+                }
 
                 case ChessPieceType.King:
-                    {
-                        return "K";
-                    }
+                {
+                    return "K";
+                }
                 default:
-                    {
-                        return "P";
-                    }
+                {
+                    return "P";
+                }
             }
         }
 
@@ -135,36 +135,35 @@ namespace ChessEngine.Engine
             switch (pieceType)
             {
                 case ChessPieceType.Pawn:
-                    {
-                        return 100;
-                        
-                    }
+                {
+                    return 100;
+                }
                 case ChessPieceType.Knight:
-                    {
-                        return 320;
-                    }
+                {
+                    return 320;
+                }
                 case ChessPieceType.Bishop:
-                    {
-                        return 325;
-                    }
+                {
+                    return 325;
+                }
                 case ChessPieceType.Rook:
-                    {
-                        return 500;
-                    }
+                {
+                    return 500;
+                }
 
                 case ChessPieceType.Queen:
-                    {
-                        return 975;
-                    }
+                {
+                    return 975;
+                }
 
                 case ChessPieceType.King:
-                    {
-                        return 32767;
-                    }
+                {
+                    return 32767;
+                }
                 default:
-                    {
-                        return 0;
-                    }
+                {
+                    return 0;
+                }
             }
         }
 
@@ -173,46 +172,38 @@ namespace ChessEngine.Engine
             switch (pieceType)
             {
                 case ChessPieceType.Pawn:
-                    {
-                        return 6;
-
-                    }
+                {
+                    return 6;
+                }
                 case ChessPieceType.Knight:
-                    {
-                        return 3;
-                    }
+                {
+                    return 3;
+                }
                 case ChessPieceType.Bishop:
-                    {
-                        return 3;
-                    }
+                {
+                    return 3;
+                }
                 case ChessPieceType.Rook:
-                    {
-                        return 2;
-                    }
+                {
+                    return 2;
+                }
 
                 case ChessPieceType.Queen:
-                    {
-                        return 1;
-                    }
+                {
+                    return 1;
+                }
 
                 case ChessPieceType.King:
-                    {
-                        return 1;
-                    }
+                {
+                    return 1;
+                }
                 default:
-                    {
-                        return 0;
-                    }
+                {
+                    return 0;
+                }
             }
         }
-        
+
         #endregion
-
-        public new string ToString()
-        {
-            return PieceType + " " + PieceColor + " " + PieceValue + " " + PieceActionValue + " " + ValidMoves.Count + " " + AttackedValue + " " + DefendedValue;
-
-        }
-
     }
 }

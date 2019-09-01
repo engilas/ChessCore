@@ -1,18 +1,17 @@
-﻿
-namespace ChessEngine.Engine
+﻿namespace ChessEngine.Engine
 {
     public class PiecesTaken
     {
-        public int WhiteQueen;
-        public int WhiteRook;
-        public int WhiteBishop;
-        public int WhiteKnight;
-        public int WhitePawn;
-        public int BlackQueen;
-        public int BlackRook;
         public int BlackBishop;
         public int BlackKnight;
         public int BlackPawn;
+        public int BlackQueen;
+        public int BlackRook;
+        public int WhiteBishop;
+        public int WhiteKnight;
+        public int WhitePawn;
+        public int WhiteQueen;
+        public int WhiteRook;
 
         public PiecesTaken()
         {

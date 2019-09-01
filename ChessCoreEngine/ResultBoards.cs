@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace ChessEngine.Engine
 {
     internal struct ResultBoards
-    {       
-        internal List<Board> Positions;        
+    {
+        internal List<Board> Positions;
     }
 }

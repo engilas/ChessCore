@@ -1,8 +1,5 @@
-using System;
-
 namespace ChessEngine.Engine
 {
-    
     public struct PieceMoving
     {
         public byte DstPosition;
@@ -10,9 +7,9 @@ namespace ChessEngine.Engine
         public ChessPieceColor PieceColor;
         public ChessPieceType PieceType;
         public byte SrcPosition;
-        
+
         public PieceMoving(ChessPieceColor pieceColor, ChessPieceType pieceType, bool moved,
-                           byte srcPosition, byte dstPosition)
+            byte srcPosition, byte dstPosition)
         {
             PieceColor = pieceColor;
             PieceType = pieceType;
@@ -39,7 +36,7 @@ namespace ChessEngine.Engine
             Moved = false;
         }
     }
-   
+
     public struct PieceTaken
     {
         public bool Moved;
@@ -48,7 +45,7 @@ namespace ChessEngine.Engine
         public byte Position;
 
         public PieceTaken(ChessPieceColor pieceColor, ChessPieceType pieceType, bool moved,
-                          byte position)
+            byte position)
         {
             PieceColor = pieceColor;
             PieceType = pieceType;
@@ -64,25 +61,25 @@ namespace ChessEngine.Engine
             Moved = false;
         }
     }
-   
+
     public sealed class MoveContent
     {
+        public bool DoubleColKnight;
+        public bool DoubleColQueen;
+        public bool DoubleColRook;
+
+        public bool DoubleRowKnight;
+
+        public bool DoubleRowQueen;
+
+        public bool DoubleRowRook;
         public bool EnPassantOccured;
         public PieceMoving MovingPiecePrimary;
         public PieceMoving MovingPieceSecondary;
         public ChessPieceType PawnPromotedTo;
-        public PieceTaken TakenPiece;
-
-        public bool DoubleRowQueen;
-        public bool DoubleColQueen;
-
-        public bool DoubleRowRook;
-        public bool DoubleColRook;
-
-        public bool DoubleRowKnight;
-        public bool DoubleColKnight;
 
         public string PgnMove;
+        public PieceTaken TakenPiece;
 
 
         public MoveContent()
@@ -98,9 +95,9 @@ namespace ChessEngine.Engine
             MovingPieceSecondary = new PieceMoving(moveContent.MovingPieceSecondary);
 
             TakenPiece = new PieceTaken(moveContent.TakenPiece.PieceColor,
-                                        moveContent.TakenPiece.PieceType,
-                                        moveContent.TakenPiece.Moved,
-                                        moveContent.TakenPiece.Position);
+                moveContent.TakenPiece.PieceType,
+                moveContent.TakenPiece.Moved,
+                moveContent.TakenPiece.Position);
 
             EnPassantOccured = moveContent.EnPassantOccured;
             PawnPromotedTo = moveContent.PawnPromotedTo;
@@ -108,46 +105,35 @@ namespace ChessEngine.Engine
 
         public MoveContent(string move) : this()
         {
-            int srcCol =-1;
-            
-            bool comment = false;
-            bool srcFound = false;
+            var srcCol = -1;
+
+            var comment = false;
+            var srcFound = false;
 
             if (move.Contains("=Q"))
-            {
                 PawnPromotedTo = ChessPieceType.Queen;
-            }
             else if (move.Contains("=N"))
-            {
                 PawnPromotedTo = ChessPieceType.Knight;
-            }
             else if (move.Contains("=R"))
-            {
                 PawnPromotedTo = ChessPieceType.Rook;
-            }
-            else if (move.Contains("=B"))
-            {
-                PawnPromotedTo = ChessPieceType.Bishop;
-            }
+            else if (move.Contains("=B")) PawnPromotedTo = ChessPieceType.Bishop;
 
-            foreach (char c in move)
+            foreach (var c in move)
             {
-                if (c=='{')
+                if (c == '{')
                 {
                     comment = true;
                     continue;
                 }
+
                 if (c == '}')
                 {
                     comment = false;
                     continue;
                 }
 
-                if (comment)
-                {
-                    continue;
-                }
-       
+                if (comment) continue;
+
                 if (MovingPiecePrimary.PieceType == ChessPieceType.None)
                 {
                     //Get Piece Type
@@ -158,18 +144,21 @@ namespace ChessEngine.Engine
                         MovingPiecePrimary.PieceType = ChessPieceType.Pawn;
 
                         //This is a column character
-                        srcCol= GetIntFromColumn(c);
+                        srcCol = GetIntFromColumn(c);
                     }
+
                     continue;
                 }
+
                 if (srcCol < 0)
                 {
                     srcCol = GetIntFromColumn(c);
                     continue;
                 }
+
                 if (srcCol >= 0)
                 {
-                    int srcRow = int.Parse(c.ToString());
+                    var srcRow = int.Parse(c.ToString());
 
                     if (!srcFound)
                     {
@@ -182,83 +171,61 @@ namespace ChessEngine.Engine
                     }
 
                     srcCol = -1;
-                    continue;
                 }
             }
         }
 
-		public static bool ParseAN(string move, ref byte sourceColumn, ref byte sourceRow, ref byte destinationColumn, ref byte destinationRow)
-		{
-			if (move.Length != 4) return false;
-			sourceColumn = (byte)GetIntFromColumn(move[0]);
-			sourceRow = (byte)(8 - int.Parse(""+move[1]));
-			destinationColumn = (byte)GetIntFromColumn(move[2]);
-			destinationRow = (byte)(8 - int.Parse(""+move[3]));
-			return true;
-		}
+        public static bool ParseAN(string move, ref byte sourceColumn, ref byte sourceRow, ref byte destinationColumn,
+            ref byte destinationRow)
+        {
+            if (move.Length != 4) return false;
+            sourceColumn = (byte) GetIntFromColumn(move[0]);
+            sourceRow = (byte) (8 - int.Parse("" + move[1]));
+            destinationColumn = (byte) GetIntFromColumn(move[2]);
+            destinationRow = (byte) (8 - int.Parse("" + move[3]));
+            return true;
+        }
 
-		public string GetPureCoordinateNotation()
-		{
-            var srcCol = (byte) (MovingPiecePrimary.SrcPosition%8);
-            var srcRow = (byte)(8 - (MovingPiecePrimary.SrcPosition / 8));
-            var dstCol = (byte) (MovingPiecePrimary.DstPosition%8);
-            var dstRow = (byte) (8 - (MovingPiecePrimary.DstPosition/8));
-			
-			string result = ""+(char)('a'+srcCol)+(srcRow) + (char)('a'+dstCol)+(dstRow);
+        public string GetPureCoordinateNotation()
+        {
+            var srcCol = (byte) (MovingPiecePrimary.SrcPosition % 8);
+            var srcRow = (byte) (8 - MovingPiecePrimary.SrcPosition / 8);
+            var dstCol = (byte) (MovingPiecePrimary.DstPosition % 8);
+            var dstRow = (byte) (8 - MovingPiecePrimary.DstPosition / 8);
+
+            var result = "" + (char) ('a' + srcCol) + srcRow + (char) ('a' + dstCol) + dstRow;
             if (PawnPromotedTo == ChessPieceType.Queen)
-            {
                 result += "=Q";
-            }
             else if (PawnPromotedTo == ChessPieceType.Rook)
-            {
                 result += "=R";
-            }
             else if (PawnPromotedTo == ChessPieceType.Bishop)
-            {
                 result += "=B";
-            }
-            else if (PawnPromotedTo == ChessPieceType.Knight)
-            {
-                result += "=N";
-            }
-			return result;
-		}
-		
+            else if (PawnPromotedTo == ChessPieceType.Knight) result += "=N";
+            return result;
+        }
+
         public new string ToString()
         {
-            if (!String.IsNullOrEmpty(PgnMove))
-            {
-                return PgnMove;
-            }
+            if (!string.IsNullOrEmpty(PgnMove)) return PgnMove;
 
-            var srcCol = (byte) (MovingPiecePrimary.SrcPosition%8);
-            var srcRow = (byte)(8 - (MovingPiecePrimary.SrcPosition / 8));
-            var dstCol = (byte) (MovingPiecePrimary.DstPosition%8);
-            var dstRow = (byte) (8 - (MovingPiecePrimary.DstPosition/8));
+            var srcCol = (byte) (MovingPiecePrimary.SrcPosition % 8);
+            var srcRow = (byte) (8 - MovingPiecePrimary.SrcPosition / 8);
+            var dstCol = (byte) (MovingPiecePrimary.DstPosition % 8);
+            var dstRow = (byte) (8 - MovingPiecePrimary.DstPosition / 8);
 
             if (MovingPieceSecondary.PieceType == ChessPieceType.Rook)
             {
                 if (MovingPieceSecondary.PieceColor == ChessPieceColor.Black)
                 {
                     if (MovingPieceSecondary.SrcPosition == 7)
-                    {
                         PgnMove += "O-O";
-                    }
-                    else if (MovingPieceSecondary.SrcPosition == 0)
-                    {
-                        PgnMove += "O-O-O";
-                    }
+                    else if (MovingPieceSecondary.SrcPosition == 0) PgnMove += "O-O-O";
                 }
                 else if (MovingPieceSecondary.PieceColor == ChessPieceColor.White)
                 {
                     if (MovingPieceSecondary.SrcPosition == 63)
-                    {
                         PgnMove += "O-O";
-                    }
-                    else if (MovingPieceSecondary.SrcPosition == 56)
-                    {
-                        PgnMove += "O-O-O";
-                    }
+                    else if (MovingPieceSecondary.SrcPosition == 56) PgnMove += "O-O-O";
                 }
             }
             else
@@ -276,38 +243,23 @@ namespace ChessEngine.Engine
                         PgnMove += srcRow;
                         break;
                     case ChessPieceType.Pawn:
-                        if (srcCol != dstCol)
-                        {
-                            PgnMove += GetColumnFromInt(srcCol);
-                        }
+                        if (srcCol != dstCol) PgnMove += GetColumnFromInt(srcCol);
                         break;
                 }
 
-                if (TakenPiece.PieceType != ChessPieceType.None)
-                {
-                    PgnMove += "x";
-                }
+                if (TakenPiece.PieceType != ChessPieceType.None) PgnMove += "x";
 
                 PgnMove += GetColumnFromInt(dstCol);
 
                 PgnMove += dstRow;
 
                 if (PawnPromotedTo == ChessPieceType.Queen)
-                {
                     PgnMove += "=Q";
-                }
                 else if (PawnPromotedTo == ChessPieceType.Rook)
-                {
                     PgnMove += "=R";
-                }
                 else if (PawnPromotedTo == ChessPieceType.Bishop)
-                {
                     PgnMove += "=B";
-                }
-                else if (PawnPromotedTo == ChessPieceType.Knight)
-                {
-                    PgnMove += "=N";
-                }
+                else if (PawnPromotedTo == ChessPieceType.Knight) PgnMove += "=N";
             }
 
             return PgnMove;
@@ -315,21 +267,18 @@ namespace ChessEngine.Engine
 
         internal string GeneratePGNString(Board board)
         {
-            if (!String.IsNullOrEmpty(PgnMove))
-            {
-                return PgnMove;
-            }
+            if (!string.IsNullOrEmpty(PgnMove)) return PgnMove;
 
-            bool doubleColumn = false;
-            bool doubleRow = false;
+            var doubleColumn = false;
+            var doubleRow = false;
 
 
-            bool doubleDestination = false;
+            var doubleDestination = false;
 
-            var srcCol = (byte)(MovingPiecePrimary.SrcPosition % 8);
-            var srcRow = (byte)(8 - (MovingPiecePrimary.SrcPosition / 8));
-            var dstCol = (byte)(MovingPiecePrimary.DstPosition % 8);
-            var dstRow = (byte)(8 - (MovingPiecePrimary.DstPosition / 8));
+            var srcCol = (byte) (MovingPiecePrimary.SrcPosition % 8);
+            var srcRow = (byte) (8 - MovingPiecePrimary.SrcPosition / 8);
+            var dstCol = (byte) (MovingPiecePrimary.DstPosition % 8);
+            var dstRow = (byte) (8 - MovingPiecePrimary.DstPosition / 8);
 
             PgnMove = "";
 
@@ -337,43 +286,29 @@ namespace ChessEngine.Engine
             {
                 if (x == MovingPiecePrimary.DstPosition)
                     continue;
-                
-                Square square = board.Squares[x];
+
+                var square = board.Squares[x];
 
                 if (square.Piece == null)
                     continue;
 
-                
+
                 if (square.Piece.PieceType == MovingPiecePrimary.PieceType)
-                {
                     if (square.Piece.PieceColor == MovingPiecePrimary.PieceColor)
-                    {
-                        foreach (byte move in square.Piece.ValidMoves)
-                        {
+                        foreach (var move in square.Piece.ValidMoves)
                             if (move == MovingPiecePrimary.DstPosition)
                             {
                                 doubleDestination = true;
 
-                                byte col = (byte)(x % 8);
-                                byte row = (byte)(8-(x / 8));
-                               
-                                if (col == srcCol)
-                                {
-                                    doubleColumn = true;
-                                }
+                                var col = (byte) (x % 8);
+                                var row = (byte) (8 - x / 8);
 
-                                if (row == srcRow)
-                                {
-                                    doubleRow = true;
-                                }
-                               
+                                if (col == srcCol) doubleColumn = true;
+
+                                if (row == srcRow) doubleRow = true;
+
                                 break;
                             }
-                        }
-
-                        
-                    }
-                }
             }
 
 
@@ -382,24 +317,14 @@ namespace ChessEngine.Engine
                 if (MovingPieceSecondary.PieceColor == ChessPieceColor.Black)
                 {
                     if (MovingPieceSecondary.SrcPosition == 7)
-                    {
                         PgnMove += "O-O";
-                    }
-                    else if (MovingPieceSecondary.SrcPosition == 0)
-                    {
-                        PgnMove += "O-O-O";
-                    }
+                    else if (MovingPieceSecondary.SrcPosition == 0) PgnMove += "O-O-O";
                 }
                 else if (MovingPieceSecondary.PieceColor == ChessPieceColor.White)
                 {
                     if (MovingPieceSecondary.SrcPosition == 63)
-                    {
                         PgnMove += "O-O";
-                    }
-                    else if (MovingPieceSecondary.SrcPosition == 56)
-                    {
-                        PgnMove += "O-O-O";
-                    }
+                    else if (MovingPieceSecondary.SrcPosition == 56) PgnMove += "O-O-O";
                 }
             }
             else
@@ -409,125 +334,99 @@ namespace ChessEngine.Engine
                 switch (MovingPiecePrimary.PieceType)
                 {
                     case ChessPieceType.Knight:
+                    {
+                        if (doubleDestination)
                         {
-                            if (doubleDestination)
+                            if (!doubleColumn)
                             {
-                                if (!doubleColumn)
-                                {
-                                    PgnMove += GetColumnFromInt(srcCol);
-                                }
-                                else
-                                {
-                                    if (doubleRow)
-                                    {
-                                        PgnMove += GetColumnFromInt(srcCol);
-                                    }
-
-                                    PgnMove += srcRow;
-                                }
+                                PgnMove += GetColumnFromInt(srcCol);
                             }
-                            break;
+                            else
+                            {
+                                if (doubleRow) PgnMove += GetColumnFromInt(srcCol);
+
+                                PgnMove += srcRow;
+                            }
                         }
+
+                        break;
+                    }
                     case ChessPieceType.Bishop:
+                    {
+                        if (doubleDestination)
                         {
-                            if (doubleDestination)
+                            if (!doubleColumn)
                             {
-                                if (!doubleColumn)
-                                {
-                                    PgnMove += GetColumnFromInt(srcCol);
-                                }
-                                else
-                                {
-                                    if (doubleRow)
-                                    {
-                                        PgnMove += GetColumnFromInt(srcCol);
-                                    }
-
-                                    PgnMove += srcRow;
-                                }
+                                PgnMove += GetColumnFromInt(srcCol);
                             }
-                            break;
+                            else
+                            {
+                                if (doubleRow) PgnMove += GetColumnFromInt(srcCol);
+
+                                PgnMove += srcRow;
+                            }
                         }
+
+                        break;
+                    }
                     case ChessPieceType.Rook:
+                    {
+                        if (doubleDestination)
                         {
-                            if (doubleDestination)
+                            if (!doubleColumn)
                             {
-                                if (!doubleColumn)
-                                {
-                                    PgnMove += GetColumnFromInt(srcCol);
-                                }
-                                else
-                                {
-                                    if (doubleRow)
-                                    {
-                                        PgnMove += GetColumnFromInt(srcCol);
-                                    }
-
-                                    PgnMove += srcRow;
-                                }
+                                PgnMove += GetColumnFromInt(srcCol);
                             }
-                            break;
+                            else
+                            {
+                                if (doubleRow) PgnMove += GetColumnFromInt(srcCol);
+
+                                PgnMove += srcRow;
+                            }
                         }
+
+                        break;
+                    }
                     case ChessPieceType.Queen:
+                    {
+                        if (doubleDestination)
                         {
-                            if (doubleDestination)
+                            if (!doubleColumn)
                             {
-                                if (!doubleColumn)
-                                {
-                                    PgnMove += GetColumnFromInt(srcCol);
-                                }
-                                else
-                                {
-                                    if (doubleRow)
-                                    {
-                                        PgnMove += GetColumnFromInt(srcCol);
-                                    }
-
-                                    PgnMove += srcRow;
-                                }
+                                PgnMove += GetColumnFromInt(srcCol);
                             }
-                            break;
+                            else
+                            {
+                                if (doubleRow) PgnMove += GetColumnFromInt(srcCol);
+
+                                PgnMove += srcRow;
+                            }
                         }
+
+                        break;
+                    }
                     case ChessPieceType.Pawn:
-                        {
-                            if (doubleDestination && srcCol != dstCol)
-                            {
-                                PgnMove += GetColumnFromInt(srcCol);
-                            }
-                            else if (TakenPiece.PieceType != ChessPieceType.None)
-                            {
-                                PgnMove += GetColumnFromInt(srcCol);
-                            }
-                            break;
-                        }
+                    {
+                        if (doubleDestination && srcCol != dstCol)
+                            PgnMove += GetColumnFromInt(srcCol);
+                        else if (TakenPiece.PieceType != ChessPieceType.None) PgnMove += GetColumnFromInt(srcCol);
+                        break;
+                    }
                 }
 
-                if (TakenPiece.PieceType != ChessPieceType.None)
-                {
-                    
-                    PgnMove += "x";
-                }
+                if (TakenPiece.PieceType != ChessPieceType.None) PgnMove += "x";
 
                 PgnMove += GetColumnFromInt(dstCol);
 
                 PgnMove += dstRow;
 
                 if (PawnPromotedTo == ChessPieceType.Queen)
-                {
                     PgnMove += "=Q";
-                }
                 else if (PawnPromotedTo == ChessPieceType.Rook)
-                {
                     PgnMove += "=R";
-                }
                 else if (PawnPromotedTo == ChessPieceType.Bishop)
-                {
                     PgnMove += "=B";
-                }
-                else if (PawnPromotedTo == ChessPieceType.Knight)
-                {
-                    PgnMove += "=N";
-                }
+                else if (PawnPromotedTo == ChessPieceType.Knight) PgnMove += "=N";
             }
 
             return PgnMove;
@@ -535,7 +434,7 @@ namespace ChessEngine.Engine
 
         private static byte GetBoardIndex(int col, int row)
         {
-            return (byte)(col + (row * 8));
+            return (byte) (col + row * 8);
         }
 
         private static string GetColumnFromInt(int column)

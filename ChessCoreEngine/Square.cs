@@ -1,6 +1,5 @@
 namespace ChessEngine.Engine
 {
-    
     internal struct Square
     {
         internal Piece Piece;

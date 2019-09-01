@@ -14,11 +14,12 @@ namespace ChessEngine.Engine
         }
 
 
-        public static string GeneratePGN(Stack<MoveContent> moveHistory, int round, string whitePlayer, string blackPlayer, Result result)
+        public static string GeneratePGN(Stack<MoveContent> moveHistory, int round, string whitePlayer,
+            string blackPlayer, Result result)
         {
-            int count = 0;
+            var count = 0;
 
-            string pgn = "";
+            var pgn = "";
 
             /*
                 [Event "F/S Return Match"]
@@ -30,37 +31,26 @@ namespace ChessEngine.Engine
                 [Result "1/2-1/2"]
             */
 
-            string pgnHeader = "";
+            var pgnHeader = "";
 
             pgnHeader += "[Date \"" + DateTime.Now.Year + "." + DateTime.Now.Month + "." + DateTime.Now.Day + "\"]\r\n";
             pgnHeader += "[White \"" + whitePlayer + "\"]\r\n";
             pgnHeader += "[Black \"" + blackPlayer + "\"]\r\n";
 
             if (result == Result.Ongoing)
-            {
                 pgnHeader += "[Result \"" + "*" + "\"]\r\n";
-            }
             else if (result == Result.White)
-            {
                 pgnHeader += "[Result \"" + "1-0" + "\"]\r\n";
-            }
             else if (result == Result.Black)
-            {
                 pgnHeader += "[Result \"" + "0-1" + "\"]\r\n";
-            }
-            else if (result == Result.Tie)
-            {
-                pgnHeader += "[Result \"" + "1/2-1/2" + "\"]\r\n";
-            }
+            else if (result == Result.Tie) pgnHeader += "[Result \"" + "1/2-1/2" + "\"]\r\n";
 
-            foreach (MoveContent move in moveHistory)
+            foreach (var move in moveHistory)
             {
-                string tmp = "";
+                var tmp = "";
 
                 if (move.MovingPiecePrimary.PieceColor == ChessPieceColor.White)
-                {
-                    tmp += ((moveHistory.Count / 2) - count + 1) + ". ";
-                }
+                    tmp += moveHistory.Count / 2 - count + 1 + ". ";
 
                 tmp += move.ToString();
                 tmp += " ";
@@ -68,28 +58,16 @@ namespace ChessEngine.Engine
                 tmp += pgn;
                 pgn = tmp;
 
-                if (move.MovingPiecePrimary.PieceColor == ChessPieceColor.Black)
-                {
-                    count++;
-                }
+                if (move.MovingPiecePrimary.PieceColor == ChessPieceColor.Black) count++;
             }
 
             if (result == Result.White)
-            {
                 pgn += " 1-0";
-            }
             else if (result == Result.Black)
-            {
                 pgn += " 0-1";
-            }
-            else if (result == Result.Tie)
-            {
-                pgn += " 1/2-1/2";
-            }
+            else if (result == Result.Tie) pgn += " 1/2-1/2";
 
             return pgnHeader + pgn;
         }
-
-
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace ChessEngine.Engine
 {
     public static class Puzzle
@@ -12,8 +11,8 @@ namespace ChessEngine.Engine
             do
             {
                 engine = PuzzleKnightBishopCandidate();
-            }
-            while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+            } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+
             return engine;
         }
 
@@ -24,8 +23,8 @@ namespace ChessEngine.Engine
             do
             {
                 engine = PuzzleRookCandidate();
-            }
-            while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+            } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+
             return engine;
         }
 
@@ -36,16 +35,16 @@ namespace ChessEngine.Engine
             do
             {
                 engine = PuzzleKingPawnCandidate();
-            }
-            while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+            } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+
             return engine;
         }
 
         private static Engine PuzzleKnightBishopCandidate()
         {
-            Engine engine = new Engine("");
+            var engine = new Engine("");
 
-            Random random = new Random(DateTime.Now.Second);
+            var random = new Random(DateTime.Now.Second);
 
             byte whiteKingIndex;
             byte blackKingIndex;
@@ -54,12 +53,11 @@ namespace ChessEngine.Engine
 
             do
             {
-                whiteKingIndex = (byte)random.Next(63);
-                blackKingIndex = (byte)random.Next(63);
-                whiteKnightIndex = (byte)random.Next(63);
-                whiteBishopIndex = (byte)random.Next(63);
-            }
-            while (
+                whiteKingIndex = (byte) random.Next(63);
+                blackKingIndex = (byte) random.Next(63);
+                whiteKnightIndex = (byte) random.Next(63);
+                whiteBishopIndex = (byte) random.Next(63);
+            } while (
                 whiteKingIndex == blackKingIndex ||
                 whiteKingIndex == whiteBishopIndex ||
                 whiteKingIndex == whiteKnightIndex ||
@@ -68,16 +66,16 @@ namespace ChessEngine.Engine
                 blackKingIndex == whiteKingIndex
             );
 
-            Piece whiteKing = new Piece(ChessPieceType.King, ChessPieceColor.White);
-            Piece whiteBishop = new Piece(ChessPieceType.Bishop, ChessPieceColor.White);
-            Piece whiteKnight = new Piece(ChessPieceType.Knight, ChessPieceColor.White);
-            Piece blackKing = new Piece(ChessPieceType.King, ChessPieceColor.Black);
+            var whiteKing = new Piece(ChessPieceType.King, ChessPieceColor.White);
+            var whiteBishop = new Piece(ChessPieceType.Bishop, ChessPieceColor.White);
+            var whiteKnight = new Piece(ChessPieceType.Knight, ChessPieceColor.White);
+            var blackKing = new Piece(ChessPieceType.King, ChessPieceColor.Black);
 
             engine.SetChessPiece(whiteKing, whiteKingIndex);
             engine.SetChessPiece(blackKing, blackKingIndex);
             engine.SetChessPiece(whiteKnight, whiteKnightIndex);
             engine.SetChessPiece(whiteBishop, whiteBishopIndex);
-            
+
             engine.GenerateValidMoves();
             engine.EvaluateBoardScore();
 
@@ -86,29 +84,28 @@ namespace ChessEngine.Engine
 
         private static Engine PuzzleRookCandidate()
         {
-            Engine engine = new Engine("");
+            var engine = new Engine("");
 
-            Random random = new Random(DateTime.Now.Second);
+            var random = new Random(DateTime.Now.Second);
 
             byte whiteKingIndex;
             byte blackKingIndex;
             byte whiteRookIndex;
-            
+
             do
             {
-                whiteKingIndex = (byte)random.Next(63);
-                blackKingIndex = (byte)random.Next(63);
-                whiteRookIndex = (byte)random.Next(63);
-            }
-            while (
+                whiteKingIndex = (byte) random.Next(63);
+                blackKingIndex = (byte) random.Next(63);
+                whiteRookIndex = (byte) random.Next(63);
+            } while (
                 whiteKingIndex == blackKingIndex ||
                 whiteKingIndex == whiteRookIndex ||
                 blackKingIndex == whiteKingIndex
             );
 
-            Piece whiteKing = new Piece(ChessPieceType.King, ChessPieceColor.White);
-            Piece whiteRook = new Piece(ChessPieceType.Rook, ChessPieceColor.White);
-            Piece blackKing = new Piece(ChessPieceType.King, ChessPieceColor.Black);
+            var whiteKing = new Piece(ChessPieceType.King, ChessPieceColor.White);
+            var whiteRook = new Piece(ChessPieceType.Rook, ChessPieceColor.White);
+            var blackKing = new Piece(ChessPieceType.King, ChessPieceColor.Black);
 
             engine.SetChessPiece(whiteKing, whiteKingIndex);
             engine.SetChessPiece(blackKing, blackKingIndex);
@@ -122,9 +119,9 @@ namespace ChessEngine.Engine
 
         private static Engine PuzzleKingPawnCandidate()
         {
-            Engine engine = new Engine("");
+            var engine = new Engine("");
 
-            Random random = new Random(DateTime.Now.Second);
+            var random = new Random(DateTime.Now.Second);
 
             byte whiteKingIndex;
             byte blackKingIndex;
@@ -132,21 +129,20 @@ namespace ChessEngine.Engine
 
             do
             {
-                whiteKingIndex = (byte)random.Next(63);
-                blackKingIndex = (byte)random.Next(63);
-                whitePawnIndex = (byte)random.Next(63);
-            }
-            while (
+                whiteKingIndex = (byte) random.Next(63);
+                blackKingIndex = (byte) random.Next(63);
+                whitePawnIndex = (byte) random.Next(63);
+            } while (
                 whiteKingIndex == blackKingIndex ||
                 whiteKingIndex == whitePawnIndex ||
                 blackKingIndex == whiteKingIndex ||
-                whitePawnIndex <= 8 ||whitePawnIndex >= 56 ||
+                whitePawnIndex <= 8 || whitePawnIndex >= 56 ||
                 whitePawnIndex < blackKingIndex
             );
 
-            Piece whiteKing = new Piece(ChessPieceType.King, ChessPieceColor.White);
-            Piece whitePawn = new Piece(ChessPieceType.Pawn, ChessPieceColor.White);
-            Piece blackKing = new Piece(ChessPieceType.King, ChessPieceColor.Black);
+            var whiteKing = new Piece(ChessPieceType.King, ChessPieceColor.White);
+            var whitePawn = new Piece(ChessPieceType.Pawn, ChessPieceColor.White);
+            var blackKing = new Piece(ChessPieceType.King, ChessPieceColor.Black);
 
             engine.SetChessPiece(whiteKing, whiteKingIndex);
             engine.SetChessPiece(blackKing, blackKingIndex);
@@ -157,6 +153,5 @@ namespace ChessEngine.Engine
 
             return engine;
         }
-
     }
 }
