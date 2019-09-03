@@ -383,7 +383,7 @@ namespace ChessEngine.Engine
             return ChessBoard.Score;
         }
 
-        public byte FindSourcePositon(ChessPieceType chessPieceType, ChessPieceColor chessPieceColor, byte dstPosition,
+        public bool MovePiece(ChessPieceType chessPieceType, ChessPieceColor chessPieceColor, byte dstPosition,
             bool capture, int forceCol, int forceRow)
         {
             Square square;
@@ -398,7 +398,10 @@ namespace ChessEngine.Engine
                         if (square.Piece.PieceType == ChessPieceType.Pawn)
                             if (square.Piece.PieceColor == chessPieceColor)
                                 if ((dstPosition + 7) % 8 == forceCol || forceCol == -1)
-                                    return (byte) (dstPosition + 7);
+                                {
+                                    var src = (byte)(dstPosition + 7);
+                                    if (MovePiece(src, dstPosition)) return true;
+                                }
 
                     square = ChessBoard.Squares[dstPosition + 9];
 
@@ -406,7 +409,10 @@ namespace ChessEngine.Engine
                         if (square.Piece.PieceType == ChessPieceType.Pawn)
                             if (square.Piece.PieceColor == chessPieceColor)
                                 if ((dstPosition + 9) % 8 == forceCol || forceCol == -1)
-                                    return (byte) (dstPosition + 9);
+                                {
+                                    var src = (byte)(dstPosition + 9);
+                                    if (MovePiece(src, dstPosition)) return true;
+                                }
                 }
                 else
                 {
@@ -418,7 +424,10 @@ namespace ChessEngine.Engine
                             if (square.Piece.PieceType == ChessPieceType.Pawn)
                                 if (square.Piece.PieceColor == chessPieceColor)
                                     if ((dstPosition - 7) % 8 == forceCol || forceCol == -1)
-                                        return (byte) (dstPosition - 7);
+                                    {
+                                        var src = (byte)(dstPosition - 7);
+                                        if (MovePiece(src, dstPosition)) return true;
+                                    }
                     }
 
                     if (dstPosition - 9 >= 0)
@@ -429,7 +438,10 @@ namespace ChessEngine.Engine
                             if (square.Piece.PieceType == ChessPieceType.Pawn)
                                 if (square.Piece.PieceColor == chessPieceColor)
                                     if ((dstPosition - 9) % 8 == forceCol || forceCol == -1)
-                                        return (byte) (dstPosition - 9);
+                                    {
+                                        var src = (byte)(dstPosition - 9);
+                                        if (MovePiece(src, dstPosition)) return true;
+                                    }
                     }
                 }
             }
@@ -451,18 +463,20 @@ namespace ChessEngine.Engine
                         if (!capture)
                             if ((byte) (x / 8) == forceRow || forceRow == -1)
                                 if (x % 8 == forceCol || forceCol == -1)
-                                    return x;
+                                    if (MovePiece(x, dstPosition))
+                                        return true;
 
                         //Capture
                         if (ChessBoard.Squares[dstPosition].Piece != null)
                             if (ChessBoard.Squares[dstPosition].Piece.PieceColor != chessPieceColor)
                                 if (x % 8 == forceCol || forceCol == -1)
                                     if ((byte) (x / 8) == forceRow || forceRow == -1)
-                                        return x;
+                                        if (MovePiece(x, dstPosition))
+                                            return true;
                     }
             }
 
-            return 0;
+            return false;
         }
 
         public bool IsValidMoveAN(string move)
